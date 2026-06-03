@@ -1,0 +1,487 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --lip-rose: #7AAB6E;
+    --lip-nude: #C47B5A;
+    --lip-berry: #4A7A42;
+    --lip-coral: #5C9E5A;
+    --lip-bg: #F2F7EE;
+    --lip-gold: #6A9A5A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  #quiz-wrap {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--lip-bg);
+    min-height: 520px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .petal {
+    position: absolute;
+    border-radius: 50% 0 50% 0;
+    opacity: 0.13;
+    pointer-events: none;
+  }
+  .petal-1 { width: 200px; height: 200px; background: #A8D49A; top: -60px; right: -40px; transform: rotate(30deg); }
+  .petal-2 { width: 140px; height: 140px; background: #7AAB6E; bottom: 40px; left: -30px; transform: rotate(-20deg); }
+  .petal-3 { width: 100px; height: 100px; background: #4A7A42; top: 200px; right: 20px; transform: rotate(60deg); }
+
+  .screen { display: none; padding: 2.5rem 2rem 2rem; position: relative; z-index: 2; }
+  .screen.active { display: block; }
+
+  .brand-tag {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #4A7A42;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    line-height: 1.15;
+    color: #1A3A1F;
+    margin-bottom: 0.5rem;
+  }
+  .hero-title em { color: #7AAB6E; font-style: italic; }
+
+  .hero-sub {
+    font-size: 14px;
+    color: #4A6A4A;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    max-width: 400px;
+  }
+
+  .start-btn {
+    background: linear-gradient(135deg, #7AAB6E, #4A7A42);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 36px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(122,171,110,0.35);
+  }
+  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(122,171,110,0.45); }
+
+  .hashtag {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 12px;
+    color: #7AAB6E;
+    font-weight: 500;
+    letter-spacing: 1px;
+    border: 1px solid rgba(122,171,110,0.35);
+    border-radius: 20px;
+    padding: 4px 14px;
+  }
+
+  .progress-bar-wrap {
+    background: rgba(122,171,110,0.15);
+    border-radius: 10px;
+    height: 4px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7AAB6E, #4A7A42);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
+
+  .q-step {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #7AAB6E;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+  }
+
+  .q-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #1A3A1F;
+    line-height: 1.4;
+    margin-bottom: 1.6rem;
+  }
+
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .opt-btn {
+    background: white;
+    border: 1.5px solid rgba(122,171,110,0.2);
+    border-radius: 14px;
+    padding: 14px 14px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .opt-btn:hover {
+    border-color: #7AAB6E;
+    background: #EEF7EB;
+    transform: translateY(-1px);
+  }
+  .opt-btn.selected {
+    border-color: #7AAB6E;
+    background: #EEF7EB;
+  }
+
+  .opt-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+  .opt-label { font-size: 13px; font-weight: 500; color: #1A3A1F; line-height: 1.4; }
+  .opt-desc { font-size: 11px; color: #6A8A6A; margin-top: 2px; }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .lip-swatch {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 3px solid white;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+
+  .result-shade {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #4A7A42;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .result-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: #1A3A1F;
+    line-height: 1.2;
+  }
+  .result-code { font-size: 13px; color: #6A8A6A; margin-top: 2px; }
+
+  .result-desc {
+    font-size: 14px;
+    color: #2A4A2F;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    background: white;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid #7AAB6E;
+  }
+
+  .matches-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #4A7A42;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+  }
+
+  .shade-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+
+  .shade-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border-radius: 20px;
+    padding: 5px 12px 5px 6px;
+    border: 1px solid rgba(122,171,110,0.2);
+    font-size: 12px;
+    color: #2A4A2F;
+    font-weight: 500;
+  }
+
+  .chip-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; }
+
+  .cta-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .cta-share {
+    background: linear-gradient(135deg, #7AAB6E, #4A7A42);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 28px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: transform 0.15s;
+  }
+  .cta-share:hover { transform: translateY(-1px); }
+
+  .cta-retry {
+    background: white;
+    color: #7AAB6E;
+    border: 1.5px solid rgba(122,171,110,0.4);
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.15s;
+  }
+  .cta-retry:hover { border-color: #7AAB6E; }
+
+  .ig-badge {
+    margin-top: 1.2rem;
+    font-size: 12px;
+    color: #6A8A6A;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .ig-tag { color: #7AAB6E; font-weight: 500; }
+
+  .toast {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1A3A1F;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 13px;
+    transition: transform 0.3s;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+
+<div id="quiz-wrap">
+  <div class="petal petal-1"></div>
+  <div class="petal petal-2"></div>
+  <div class="petal petal-3"></div>
+
+  <div id="s-intro" class="screen active">
+    <div class="brand-tag">Lụa Diễm × #SắcDiễmĐónXuân</div>
+    <h1 class="hero-title">Son nào dành<br>cho <em>làn môi</em> của bạn?</h1>
+    <p class="hero-sub">Trả lời 5 câu hỏi nhỏ — chúng tôi sẽ tìm ra màu son Lụa Diễm hoàn hảo nhất cho cá tính của bạn 💄</p>
+    <button class="start-btn" onclick="startQuiz()">Bắt đầu thôi ✨</button>
+    <div><span class="hashtag">#SắcDiễmĐónXuân</span></div>
+  </div>
+
+  <div id="s-quiz" class="screen">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="prog"></div></div>
+    <div class="q-step" id="q-step"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options-grid" id="opts"></div>
+  </div>
+
+  <div id="s-result" class="screen">
+    <div class="brand-tag">Kết quả của bạn</div>
+    <div class="result-header">
+      <div class="lip-swatch" id="res-swatch"></div>
+      <div>
+        <div class="result-shade" id="res-shade"></div>
+        <div class="result-name" id="res-name"></div>
+        <div class="result-code" id="res-code"></div>
+      </div>
+    </div>
+    <div class="result-desc" id="res-desc"></div>
+    <div class="matches-label">Những màu bạn cũng sẽ mê</div>
+    <div class="shade-chips" id="res-chips"></div>
+    <div class="cta-row">
+      <button class="cta-share" onclick="shareResult()">Chia sẻ kết quả 📸</button>
+      <button class="cta-retry" onclick="retryQuiz()">Làm lại quiz</button>
+    </div>
+    <div class="ig-badge">
+      <i class="ti ti-brand-instagram" aria-hidden="true"></i>
+      Đăng story & tag <span class="ig-tag">@comem_homelab</span> để dự thưởng!
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: "Khi nghĩ đến Tết, điều đầu tiên bạn hình dung là gì?",
+    opts: [
+      { icon: "🌸", label: "Hoa đào nở rộ", desc: "Lãng mạn & nhẹ nhàng", v: "pink" },
+      { icon: "🔥", label: "Pháo hoa rực rỡ", desc: "Rực rỡ & nổi bật", v: "bold" },
+      { icon: "🍊", label: "Mâm ngũ quả", desc: "Ấm áp & truyền thống", v: "warm" },
+      { icon: "🍫", label: "Kẹo mứt ngọt ngào", desc: "Sâu lắng & tinh tế", v: "deep" }
+    ]
+  },
+  {
+    text: "Outfit Tết của bạn thường là?",
+    opts: [
+      { icon: "🌷", label: "Áo dài pastel", desc: "Nhẹ nhàng, nữ tính", v: "pink" },
+      { icon: "💃", label: "Đầm đỏ rực", desc: "Thu hút mọi ánh nhìn", v: "bold" },
+      { icon: "🧡", label: "Áo dài cam đất", desc: "Ấm áp, sang trọng", v: "warm" },
+      { icon: "🍷", label: "Tông màu tối bí ẩn", desc: "Cá tính, độc đáo", v: "deep" }
+    ]
+  },
+  {
+    text: "Bạn thường nhận được lời khen gì nhất?",
+    opts: [
+      { icon: "🥰", label: "Dễ thương, trong sáng", desc: "", v: "pink" },
+      { icon: "💫", label: "Rạng rỡ, tự tin", desc: "", v: "bold" },
+      { icon: "☀️", label: "Tươi tắn, năng động", desc: "", v: "warm" },
+      { icon: "🖤", label: "Huyền bí, thu hút", desc: "", v: "deep" }
+    ]
+  },
+  {
+    text: "Bữa tiệc mà bạn không thể thiếu là?",
+    opts: [
+      { icon: "🫖", label: "Trà chiều cùng gia đình", desc: "Ấm cúng, bình yên", v: "pink" },
+      { icon: "🥂", label: "Tiệc đêm giao thừa", desc: "Sôi động, vui nhộn", v: "bold" },
+      { icon: "🍜", label: "Bữa cơm sum vầy", desc: "Chân thật, yêu thương", v: "warm" },
+      { icon: "🌙", label: "Buổi hẹn romantic", desc: "Tình cảm, cuốn hút", v: "deep" }
+    ]
+  },
+  {
+    text: "Một câu diễn tả bạn nhất?",
+    opts: [
+      { icon: "🌷", label: "Nhẹ nhàng như gió xuân", desc: "", v: "pink" },
+      { icon: "✨", label: "Tỏa sáng giữa đám đông", desc: "", v: "bold" },
+      { icon: "🌻", label: "Ấm áp như ánh nắng", desc: "", v: "warm" },
+      { icon: "🌹", label: "Cuốn hút không thể rời mắt", desc: "", v: "deep" }
+    ]
+  }
+];
+
+const shades = {
+  101: { name: "Đỏ Trầm", hex: "#8B2252", label: "Màu 101" },
+  102: { name: "Hồng Baby", hex: "#F4A0B5", label: "Màu 102" },
+  103: { name: "Cam Hồng Đất", hex: "#C47B5A", label: "Màu 103" },
+  104: { name: "Cam Hồng Đào", hex: "#E8896A", label: "Màu 104" },
+  105: { name: "Đỏ Nâu Đất", hex: "#7A3B2E", label: "Màu 105" },
+  106: { name: "Đỏ Cam", hex: "#D85A30", label: "Màu 106" },
+  107: { name: "Hồng Đỏ", hex: "#C94B6E", label: "Màu 107" },
+  108: { name: "Đỏ Cherry", hex: "#9B1B1B", label: "Màu 108" }
+};
+
+const results = {
+  pink: {
+    main: 102, also: [107, 103],
+    desc: "Bạn là cô nàng nhẹ nhàng, nữ tính — luôn toả ra sức hút tinh khôi như hoa xuân mới nở. Hồng Baby 102 sẽ tôn lên vẻ trong sáng, dịu dàng của bạn, tạo nên nụ cười ngọt ngào nhất mùa Tết này!",
+    title: "Nàng Hồng Ngọt"
+  },
+  bold: {
+    main: 107, also: [106, 108],
+    desc: "Bạn sinh ra để toả sáng! Tự tin, rực rỡ, thu hút mọi ánh nhìn — Hồng Đỏ 107 chính là vũ khí bí mật giúp bạn tạo nên khoảnh khắc ấn tượng nhất trong mỗi bức ảnh Tết.",
+    title: "Nàng Rực Rỡ"
+  },
+  warm: {
+    main: 104, also: [103, 106],
+    desc: "Ấm áp, chân thật và tràn đầy năng lượng tích cực — Cam Hồng Đào 104 phản chiếu đúng cái tinh thần Tết của bạn: rực rỡ nhưng không chói, nổi bật nhưng gần gũi.",
+    title: "Nàng Ấm Áp"
+  },
+  deep: {
+    main: 108, also: [101, 105],
+    desc: "Bí ẩn, cuốn hút và sâu sắc — bạn là người mang vẻ đẹp không ai quên được. Đỏ Cherry 108 sẽ nhấn mạnh cá tính đặc biệt đó, khiến mỗi khoảnh khắc bạn xuất hiện đều trở thành highlight của cả buổi tiệc.",
+    title: "Nàng Huyền Bí"
+  }
+};
+
+let scores = { pink: 0, bold: 0, warm: 0, deep: 0 };
+let current = 0;
+
+function startQuiz() {
+  scores = { pink: 0, bold: 0, warm: 0, deep: 0 };
+  current = 0;
+  showQ();
+  document.getElementById('s-intro').classList.remove('active');
+  document.getElementById('s-quiz').classList.add('active');
+}
+
+function showQ() {
+  const q = questions[current];
+  document.getElementById('q-step').textContent = 'Câu ' + (current + 1) + ' / ' + questions.length;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('prog').style.width = ((current / questions.length) * 100) + '%';
+  const grid = document.getElementById('opts');
+  grid.innerHTML = '';
+  q.opts.forEach(o => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span class="opt-icon">' + o.icon + '</span><div><div class="opt-label">' + o.label + '</div>' + (o.desc ? '<div class="opt-desc">' + o.desc + '</div>' : '') + '</div>';
+    btn.onclick = () => pick(o.v, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function pick(v, btn) {
+  document.querySelectorAll('.opt-btn').forEach(b => b.style.pointerEvents = 'none');
+  btn.classList.add('selected');
+  scores[v]++;
+  setTimeout(() => {
+    current++;
+    if (current < questions.length) { showQ(); } else { showResult(); }
+  }, 400);
+}
+
+function showResult() {
+  const top = Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+  const r = results[top];
+  const main = shades[r.main];
+  document.getElementById('s-quiz').classList.remove('active');
+  document.getElementById('s-result').classList.add('active');
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('res-swatch').style.background = main.hex;
+  document.getElementById('res-shade').textContent = r.title;
+  document.getElementById('res-name').textContent = main.name;
+  document.getElementById('res-code').textContent = main.label + ' · Son Lụa Diễm';
+  document.getElementById('res-desc').textContent = r.desc;
+  const chips = document.getElementById('res-chips');
+  chips.innerHTML = '';
+  r.also.forEach(id => {
+    const s = shades[id];
+    const chip = document.createElement('div');
+    chip.className = 'shade-chip';
+    chip.innerHTML = '<div class="chip-dot" style="background:' + s.hex + '"></div>' + s.label + ' ' + s.name;
+    chips.appendChild(chip);
+  });
+}
+
+function retryQuiz() {
+  document.getElementById('s-result').classList.remove('active');
+  startQuiz();
+}
+
+function shareResult() {
+  const name = document.getElementById('res-name').textContent;
+  const code = document.getElementById('res-code').textContent.split('·')[0].trim();
+  const text = 'Mình vừa biết màu son hoàn hảo của mình là ' + name + ' (' + code + ') từ @comem_homelab! Bạn cũng thử đi nha 💄 #SắcDiễmĐónXuân #LuaDiem';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('Đã copy caption! Dán vào Instagram ngay nhé 💋'));
+  } else { showToast('Đã sẵn sàng chia sẻ!'); }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
